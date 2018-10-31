@@ -1,3 +1,5 @@
+import random
+
 # Time between successful PoW solutions
 POW_SOLUTION_TIME = 12
 # Time for a block to traverse the network
@@ -11,8 +13,6 @@ UNCLE_DEPTH_PENALTY = 4/32.
 NEPHEW_REWARD_COEFF = 1/32.
 # Rounds to test
 ROUNDS = 1000000
-
-import random
 
 all_miners = {}
 
@@ -100,6 +100,7 @@ def cousin_degree(miner, b1, b2):
         t += 1
     return t
 
+
 # Set hashpower percentages and strategies
 # Strategy = how many blocks behind head you mine
 profiles = [
@@ -129,7 +130,7 @@ listen_queue = []
 
 for t in range(ROUNDS):
     if t % 5000 == 0:
-        print t
+        print(t)
     for m in miners:
         R = random.randrange(POW_SOLUTION_TIME * total_pct)
         if R < m.hashpower and t < ROUNDS - TRANSIT_TIME * 3:
@@ -145,11 +146,11 @@ profit = {}
 total_blocks_in_chain = 0
 length_of_chain = 0
 ZORO = {}
-print "### PRINTING BLOCKCHAIN ###"
+print("### PRINTING BLOCKCHAIN ###")
 
 while h["id"] > UNCLE_DEPTH + 2:
     # print h["id"], h["miner"], h["height"], h["score"]
-    # print "Uncles: ", list(h["uncles"])
+    # print("Uncles: ", list(h["uncles"]))
     total_blocks_in_chain += 1 + len(h["uncles"])
     ZORO[h["id"]] = True
     length_of_chain += 1
@@ -162,18 +163,18 @@ while h["id"] > UNCLE_DEPTH + 2:
             = profit.get(u2["miner"], 0) + UNCLE_REWARD_COEFF - UNCLE_DEPTH_PENALTY * (h["height"] - u2["height"])
     h = miners[0].blocks[h["parent"]]
 
-print "### PRINTING HEADS ###"
+print("### PRINTING HEADS ###")
 
 for m in miners:
-    print m.head
+    print(m.head)
 
 
-print "### PRINTING PROFITS ###"
+print("### PRINTING PROFITS ###")
 
 for p in profit:
-    print miner_dict.get(p, Miner(0)).hashpower, profit.get(p, 0)
+    print(miner_dict.get(p, Miner(0)).hashpower, profit.get(p, 0))
 
-print "### PRINTING RESULTS ###"
+print("### PRINTING RESULTS ###")
 
 groupings = {}
 counts = {}
@@ -185,13 +186,12 @@ for p in profit:
         groupings[h] = groupings.get(h, 0) + profit[p]
 
 for c in counts:
-    print c, groupings[c] / counts[c] / (groupings['1,0'] / counts['1,0'])
+    print(c, groupings[c] / counts[c] / (groupings['1,0'] / counts['1,0']))
 
-print " "
-print "Total blocks produced: ", len(all_miners) - UNCLE_DEPTH
-print "Total blocks in chain: ", total_blocks_in_chain
-print "Efficiency: ", \
-    total_blocks_in_chain * 1.0 / (len(all_miners) - UNCLE_DEPTH)
-print "Average uncles: ", total_blocks_in_chain * 1.0 / length_of_chain - 1
-print "Length of chain: ", length_of_chain
-print "Block time: ", ROUNDS * 1.0 / length_of_chain
+print(" ")
+print("Total blocks produced: ", len(all_miners) - UNCLE_DEPTH)
+print("Total blocks in chain: ", total_blocks_in_chain)
+print("Efficiency: ", total_blocks_in_chain * 1.0 / (len(all_miners) - UNCLE_DEPTH))
+print("Average uncles: ", total_blocks_in_chain * 1.0 / length_of_chain - 1)
+print("Length of chain: ", length_of_chain)
+print("Block time: ", ROUNDS * 1.0 / length_of_chain)
